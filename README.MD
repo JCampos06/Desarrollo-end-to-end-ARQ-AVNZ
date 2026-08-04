@@ -1,4 +1,4 @@
-# 🛒 API de Scraping de Productos Éxito
+# API de Scraping de Productos Éxito
 
 API REST desarrollada en **Node.js** que integra un scraper en **Python** utilizando **Selenium** para obtener información de productos del supermercado **Éxito**.
 
@@ -46,15 +46,11 @@ Cliente (Navegador / Postman)
 ### Backend
 
 - Node.js
-- Express
-- Nodemon
-- dotenv
 
 ### Scraping
 
 - Python 3
 - Selenium
-- ChromeDriver
 
 ---
 
