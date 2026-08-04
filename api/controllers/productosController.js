@@ -33,3 +33,26 @@ exports.buscar = async (req, res) => {
     }
 
 };
+
+exports.buscarTodos = async (req, res) => {
+
+    try {
+
+        const resultado = await scraper.buscar("todos");
+
+        res.json(resultado);
+
+    }
+
+    catch (e) {
+
+        res.status(500).json({
+
+            success: false,
+            error: e.message
+
+        });
+
+    }
+
+};

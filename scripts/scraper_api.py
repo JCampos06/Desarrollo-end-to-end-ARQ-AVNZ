@@ -2,7 +2,7 @@ import json
 import logging
 import sys
 
-from scraper import buscar_productos
+from scraper import buscar_productos, buscar_productos_multiple
 
 logging.disable(logging.CRITICAL)
 
@@ -22,14 +22,27 @@ def main():
 
     try:
 
-        productos = buscar_productos(termino)
+        if termino.lower() == "todos":
 
-        print(json.dumps({
-            "success": True,
-            "busqueda": termino,
-            "cantidad": len(productos),
-            "productos": productos
-        }, ensure_ascii=False))
+            productos = buscar_productos_multiple()
+
+            print(json.dumps({
+                "success": True,
+                "busqueda": "todos",
+                "cantidad": len(productos),
+                "productos": productos
+            }, ensure_ascii=False))
+
+        else:
+
+            productos = buscar_productos(termino)
+
+            print(json.dumps({
+                "success": True,
+                "busqueda": termino,
+                "cantidad": len(productos),
+                "productos": productos
+            }, ensure_ascii=False))
 
     except Exception as e:
 

@@ -240,3 +240,24 @@ def buscar_productos(termino: str):
         productos = scraper.extraer_productos()
 
         return [asdict(p) for p in productos]
+
+PRODUCTOS = [
+    "arroz",
+    "papas",
+    "agua",
+    "galletas",
+    "gaseosa"
+]
+
+
+def buscar_productos_multiple():
+
+    resultados = {}
+
+    for producto in PRODUCTOS:
+
+        print(f"Buscando {producto}...")
+
+        resultados[producto] = buscar_productos(producto)
+
+    return resultados
