@@ -14,7 +14,6 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 
-import pandas as pd
 from dataclasses import asdict
 
 logging.basicConfig(
@@ -232,10 +231,12 @@ if _previo is not None:
     except Exception:
         pass
 
-scraper = ExitoScraper(headless=True)
-scraper.buscar("arroz")
-productos = scraper.extraer_productos()
+def buscar_productos(termino: str):
 
-df = pd.DataFrame([asdict(prod) for prod in productos])
-print(f"Total productos: {len(df)}")
-df.head(20)
+    with ExitoScraper(headless=True) as scraper:
+
+        scraper.buscar(termino)
+
+        productos = scraper.extraer_productos()
+
+        return [asdict(p) for p in productos]
