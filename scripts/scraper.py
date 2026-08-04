@@ -6,6 +6,7 @@ import re
 import time
 from dataclasses import dataclass
 from typing import Optional
+import requests
 
 from selenium import webdriver
 from selenium.common.exceptions import NoSuchElementException, TimeoutException
@@ -24,6 +25,7 @@ logging.basicConfig(
 logger = logging.getLogger("exito-scraper")
 
 BASE_URL = "https://www.exito.com"
+API_URL = "http://localhost:3000/api/items"
 DEFAULT_TIMEOUT = 25
 USER_AGENT = (
     "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
@@ -252,12 +254,40 @@ PRODUCTOS = [
 
 def buscar_productos_multiple():
 
-    resultados = {}
+    resultados = []
 
-    for producto in PRODUCTOS:
+    for categoria in PRODUCTOS:
 
-        print(f"Buscando {producto}...")
+        print(f"Buscando {categoria}...")
 
-        resultados[producto] = buscar_productos(producto)
+        productos = buscar_productos(categoria)
+
+        for producto in productos:
+
+            producto["categoria"] = categoria
+
+            resultados.append(producto)
 
     return resultados
+
+def enviar_a_api(productos):
+
+    respuesta = requests.post(
+
+        API_URL,
+
+        json=productos
+
+    )
+
+    respuesta.raise_for_status()
+
+    return respuesta.json()
+
+if __name__ == "__main__":
+
+    productos = buscar_productos_multiple()
+
+    respuesta = enviar_a_api(productos)
+
+    print(respuesta)

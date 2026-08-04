@@ -1,14 +1,14 @@
 const express = require("express");
 const cors = require("cors");
 
-const productos = require("./routes/productos");
+const items = require("./routes/items");
 
 const app = express();
 
 app.use(cors());
 app.use(express.json());
 
-app.use("/productos", productos);
+app.use("/api/items", items);
 
 app.get("/health", (req, res) => {
 
