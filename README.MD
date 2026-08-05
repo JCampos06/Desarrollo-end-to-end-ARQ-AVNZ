@@ -1,80 +1,118 @@
-# API de Scraping de Productos Éxito
+# Web Scraper de Productos Éxito + API REST + Supabase
 
-API REST desarrollada en **Node.js** que integra un scraper en **Python** utilizando **Selenium** para obtener información de productos del supermercado **Éxito**.
+Proyecto desarrollado para la asignatura de Arquitectura y Patrones Avanzados.
 
-El proyecto permite realizar búsquedas de productos y obtener información estructurada en formato JSON, incluyendo nombre, precio, precio de lista, imagen y enlace al producto.
+El sistema implementa una arquitectura desacoplada compuesta por:
+
+- Un Web Scraper desarrollado en Python.
+- Una API REST desarrollada en Node.js con Express.
+- Una base de datos PostgreSQL administrada mediante Supabase.
+
+El scraper obtiene información de productos del supermercado Éxito, la envía automáticamente a la API y ésta la almacena de forma persistente en la base de datos.
 
 ---
 
 # Arquitectura
 
 ```
-Cliente (Navegador / Postman)
-
-            │
-            ▼
-
-      API REST (Node.js)
-         Express.js
-
-            │
-            ▼
-
-     Scraper Service
- (Child Process - spawn)
-
-            │
-            ▼
-
-      Python 3 + Selenium
-
-            │
-            ▼
-
-      Sitio Web de Éxito
-
-            │
-            ▼
-
-       Respuesta JSON
+                 ┌─────────────────────┐
+                 │    exito.com        │
+                 └─────────┬───────────┘
+                           │
+                     Web Scraping
+                           │
+                           ▼
+                 ┌─────────────────────┐
+                 │  scraper.py         │
+                 │     (Python)        │
+                 └─────────┬───────────┘
+                           │
+                     HTTP POST (JSON)
+                           │
+                           ▼
+                 ┌─────────────────────┐
+                 │ API REST (Express)  │
+                 │     Node.js         │
+                 └─────────┬───────────┘
+                           │
+                    Inserción masiva
+                           │
+                           ▼
+                 ┌─────────────────────┐
+                 │ PostgreSQL          │
+                 │ Supabase            │
+                 └─────────────────────┘
 ```
+
+---
+
+# Funcionalidades
+
+El scraper realiza búsquedas automáticas de las siguientes categorías:
+
+- Arroz
+- Papas
+- Agua
+- Galletas
+- Gaseosa
+
+Por cada producto se almacena:
+
+- Categoría
+- Nombre
+- Precio
+- Precio de lista (si existe)
+- URL del producto
+- Imagen
 
 ---
 
 # Tecnologías utilizadas
 
-### Backend
+## Backend
 
 - Node.js
+- Express
+- Supabase JS
 
-### Scraping
+## Scraper
 
-- Python 3
+- Python
 - Selenium
+- Requests
+
+## Base de datos
+
+- PostgreSQL
+- Supabase
 
 ---
 
 # Estructura del proyecto
 
 ```
-TALLER1/
+Proyecto/
 
+│
 ├── api/
 │   ├── controllers/
+│   │     itemsController.js
+│   │
 │   ├── routes/
+│   │     items.js
+│   │
 │   ├── services/
+│   │     supabaseService.js
+│   │
+│   ├── .env
 │   ├── package.json
 │   ├── package-lock.json
-│   ├── server.js
-│   └── .env
+│   └── server.js
 │
 ├── scripts/
-│   ├── scraper.py
-│   ├── scraper_api.py
-│   └── requirements.txt
+│   └── scraper.py
 │
-├── frontend/
-│
+├── requirements.txt
 ├── README.md
 └── .gitignore
 ```
@@ -87,35 +125,13 @@ TALLER1/
 
 ```bash
 git clone <URL_DEL_REPOSITORIO>
+
+cd Proyecto
 ```
 
 ---
 
-## 2. Instalar dependencias de Node
-
-Entrar a la carpeta de la API:
-
-```bash
-cd api
-```
-
-Instalar dependencias:
-
-```bash
-npm install
-```
-
----
-
-## 3. Instalar dependencias de Python
-
-Entrar a la carpeta de scripts:
-
-```bash
-cd ../scripts
-```
-
-Instalar:
+## 2. Instalar dependencias de Python
 
 ```bash
 pip install -r requirements.txt
@@ -123,43 +139,39 @@ pip install -r requirements.txt
 
 ---
 
-## 4. Configurar el archivo `.env`
+## 3. Instalar dependencias de Node
 
-Dentro de la carpeta `api` crear un archivo:
+```bash
+cd api
 
-```
-.env
-```
-
-Con el siguiente contenido:
-
-```env
-PYTHON_PATH=C:\Ruta\A\Tu\python.exe
-```
-
-Ejemplo:
-
-```env
-PYTHON_PATH=C:\Users\usuario\anaconda3\envs\MiEntorno\python.exe
+npm install
 ```
 
 ---
 
-# Ejecutar la API
+# Configuración
 
-Desde la carpeta:
+Crear un archivo `.env` dentro de la carpeta `api` con el siguiente contenido:
 
+```env
+SUPABASE_URL=TU_SUPABASE_URL
+
+SUPABASE_KEY=TU_SUPABASE_ANON_KEY
 ```
-api
-```
 
-Ejecutar:
+---
+
+# Ejecución
+
+## 1. Iniciar la API
 
 ```bash
+cd api
+
 npm run dev
 ```
 
-La API iniciará en:
+La API iniciará por defecto en:
 
 ```
 http://localhost:3000
@@ -167,34 +179,31 @@ http://localhost:3000
 
 ---
 
-# Endpoints disponibles
+## 2. Ejecutar el scraper
 
-## Estado de la API
+En otra terminal:
 
+```bash
+python scraper.py
 ```
-GET /health
-```
 
-Respuesta:
+El scraper:
 
-```json
-{
-    "status": "OK"
-}
-```
+- realiza las búsquedas,
+- construye el JSON,
+- envía automáticamente los datos a la API mediante HTTP POST,
+- la API valida e inserta los registros en Supabase.
 
 ---
 
-## Buscar productos
+# Endpoints disponibles
+
+## GET
+
+Obtiene todos los productos almacenados.
 
 ```
-GET /productos?busqueda=arroz
-```
-
-Ejemplo:
-
-```
-http://localhost:3000/productos?busqueda=arroz
+GET /api/items
 ```
 
 Respuesta:
@@ -202,62 +211,86 @@ Respuesta:
 ```json
 {
     "success": true,
-    "busqueda": "arroz",
-    "cantidad": 16,
-    "productos": [
-        {
-            "nombre": "...",
-            "precio": "...",
-            "precio_lista": "...",
-            "url": "...",
-            "imagen": "..."
-        }
+    "cantidad": 100,
+    "items": [
+        ...
     ]
 }
 ```
 
 ---
 
-# Flujo de funcionamiento
+## POST
 
-1. El cliente realiza una petición HTTP.
-2. Express recibe la solicitud.
-3. El controlador invoca el servicio.
-4. El servicio ejecuta `scraper_api.py`.
-5. Python llama al scraper desarrollado con Selenium.
-6. Selenium obtiene la información desde la página de Éxito.
-7. Python devuelve un JSON.
-8. Node responde al cliente.
+Inserta múltiples productos en la base de datos.
 
----
+```
+POST /api/items
+```
 
-# Requisitos
+Body:
 
-- Node.js 20 o superior
-- Python 3.10 o superior
-- Google Chrome instalado
-- ChromeDriver compatible con la versión de Chrome
-
----
-
-# Estado del proyecto
-
-Actualmente el proyecto permite:
-
-- Consultar productos por nombre.
-- Obtener nombre del producto.
-- Obtener precio actual.
-- Obtener precio de lista (cuando existe).
-- Obtener imagen del producto.
-- Obtener URL del producto.
-- Exponer toda la información mediante una API REST.
+```json
+[
+    {
+        "categoria": "arroz",
+        "nombre": "...",
+        "precio": "...",
+        "precio_lista": "...",
+        "url": "...",
+        "imagen": "..."
+    }
+]
+```
 
 ---
 
-# Autor
+# Base de datos
 
-Juan José Campos Covaleda
+La información se almacena en una tabla denominada:
 
-Universidad de La Sabana
+```
+scraped_items
+```
 
-Ingeniería Informática
+Cada registro contiene:
+
+- id
+- categoria
+- nombre
+- precio
+- precio_lista
+- url
+- imagen
+- created_at
+
+---
+
+# Flujo del sistema
+
+```
+Exito.com
+     │
+     ▼
+Scraper Python
+     │
+     ▼
+JSON
+     │
+HTTP POST
+     │
+     ▼
+API REST
+     │
+     ▼
+Supabase PostgreSQL
+     │
+     ▼
+GET /api/items
+```
+
+---
+
+# Autores
+- Juan José Campos Covaleda
+Proyecto desarrollado como parte de la asignatura Arquitectura y Patrones Avanzados.
