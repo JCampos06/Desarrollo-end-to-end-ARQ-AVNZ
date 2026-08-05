@@ -236,7 +236,6 @@ cd NOMBRE_DE_TU_CARPETA_GUARDADA
 
 ```bash
 cd api
-
 npm install
 ```
 
