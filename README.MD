@@ -111,8 +111,9 @@ Proyecto/
 │
 ├── scripts/
 │   └── scraper.py
-│   └── requeriments.txt
 │
+│
+├── requeriments.txt
 ├── README.md
 └── .gitignore
 ```
