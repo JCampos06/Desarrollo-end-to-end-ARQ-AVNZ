@@ -1,8 +1,8 @@
 # Web Scraper de Productos Éxito + API REST + Supabase
 
-Proyecto desarrollado para la asignatura de Arquitectura y Patrones Avanzados.
+Taller desarrollado para la asignatura de Arquitectura y Patrones Avanzados.
 
-El sistema implementa una arquitectura desacoplada compuesta por:
+El sistema implementa una arquitectura compuesta por:
 
 - Un Web Scraper desarrollado en Python.
 - Una API REST desarrollada en Node.js con Express.
@@ -111,8 +111,8 @@ Proyecto/
 │
 ├── scripts/
 │   └── scraper.py
+│   └── requeriments.txt
 │
-├── requirements.txt
 ├── README.md
 └── .gitignore
 ```
@@ -184,6 +184,8 @@ http://localhost:3000
 En otra terminal:
 
 ```bash
+cd scripts
+
 python scraper.py
 ```
 
@@ -293,4 +295,3 @@ GET /api/items
 
 # Autores
 - Juan José Campos Covaleda
-Proyecto desarrollado como parte de la asignatura Arquitectura y Patrones Avanzados.
