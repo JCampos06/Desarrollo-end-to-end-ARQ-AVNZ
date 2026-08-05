@@ -214,9 +214,7 @@ Su características son:
 - Conteo por categoría.
 - Filtro por categoría.
 
----
-
-# Vista previa
+## Vista previa
 
 ![Frontend](docs/frontend.png)
 
