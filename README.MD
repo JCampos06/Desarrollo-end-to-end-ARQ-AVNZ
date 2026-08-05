@@ -1,69 +1,42 @@
-# Web Scraper de Productos Éxito + API REST + Supabase
+# Web Scraper de Productos Éxito
 
-Taller desarrollado para la asignatura de Arquitectura y Patrones Avanzados.
+Proyecto desarrollado para el curso de **Arquitectura y Patrones Avanzados**, cuyo objetivo es una solución integrada para la automatización de la recolección, procesamiento, almacenamiento y presentación de información web.
 
-El sistema implementa una arquitectura compuesta por:
+El sistema está compuesto por cuatro módulos principales:
 
-- Un Web Scraper desarrollado en Python.
-- Una API REST desarrollada en Node.js con Express.
-- Una base de datos PostgreSQL administrada mediante Supabase.
-
-El scraper obtiene información de productos del supermercado Éxito, la envía automáticamente a la API y ésta la almacena de forma persistente en la base de datos.
-
----
-
-# Arquitectura
-
-```
-                 ┌─────────────────────┐
-                 │    exito.com        │
-                 └─────────┬───────────┘
-                           │
-                     Web Scraping
-                           │
-                           ▼
-                 ┌─────────────────────┐
-                 │  scraper.py         │
-                 │     (Python)        │
-                 └─────────┬───────────┘
-                           │
-                     HTTP POST (JSON)
-                           │
-                           ▼
-                 ┌─────────────────────┐
-                 │ API REST (Express)  │
-                 │     Node.js         │
-                 └─────────┬───────────┘
-                           │
-                    Inserción masiva
-                           │
-                           ▼
-                 ┌─────────────────────┐
-                 │ PostgreSQL          │
-                 │ Supabase            │
-                 └─────────────────────┘
-```
+- Web Scraper desarrollado en Python.
+- API RESTful desarrollada en Node.js.
+- Base de datos PostgreSQL administrada mediante Supabase.
+- Frontend desarrollado con HTML, CSS y JavaScript.
 
 ---
 
-# Funcionalidades
+# Arquitectura del Proyecto
 
-El scraper realiza búsquedas automáticas de las siguientes categorías:
-
-- Arroz
-- Papas
-- Agua
-- Galletas
-- Gaseosa
-
-Por cada producto se almacena:
-
-- Categoría
-- Nombre
-- Precio
-- Precio de lista (si existe)
-- URL del producto
-- Imagen
+```text
+                 exito.com
+                      │
+                      ▼
+            Web Scraper (Python)
+                      │
+              Extracción de datos
+                      │
+                HTTP POST (JSON)
+                      │
+                      ▼
+             API REST (Node.js)
+                      │
+       ┌──────────────┴──────────────┐
+       │                             │
+POST /api/items              GET /api/items
+       │                             │
+       └──────────────┬──────────────┘
+                      ▼
+             Supabase (PostgreSQL)
+                      │
+                      ▼
+          Frontend (HTML/CSS/JS)
+```
 
 ---
 
@@ -72,75 +45,196 @@ Por cada producto se almacena:
 ## Backend
 
 - Node.js
-- Express
-- Supabase JS
+- Express.js
+- Supabase
+- dotenv
+- CORS
 
-## Scraper
+## Web Scraper
 
 - Python
 - Selenium
-- Requests
 
-## Base de datos
+## Base de Datos
 
-- PostgreSQL
-- Supabase
+- Supabase conPostgreSQL
+
+## Frontend
+
+- HTML
+- CSS
+- JavaScript
 
 ---
 
 # Estructura del proyecto
 
-```
-Proyecto/
+```text
+TALLER1/
 
 │
 ├── api/
 │   ├── controllers/
-│   │     itemsController.js
-│   │
+│   │   └── itemsController.js
 │   ├── routes/
-│   │     items.js
-│   │
+│   │   └── items.js
 │   ├── services/
-│   │     supabaseService.js
-│   │
-│   ├── .env
+│   │   └── supabaseService.js
+│   ├── server.js
 │   ├── package.json
-│   ├── package-lock.json
-│   └── server.js
+│   └── .env
+│
+├── frontend/
+│   ├── css/
+│   │   └── styles.css
+│   ├── js/
+│   │   └── app.js
+│   └── index.html
 │
 ├── scripts/
-│   └── scraper.py
+│   ├── scraper.py
 │
 │
 ├── requeriments.txt
-├── README.md
-└── .gitignore
+├── .gitignore
+└── README.md
 ```
 
 ---
 
+# Funcionalidades
+
+## Web Scraper
+
+El scraper realiza búsquedas automáticas en **Éxito.com** para las siguientes categorías:
+
+- Arroz
+- Papas
+- Agua
+- Galletas
+- Gaseosa
+
+Para cada producto obtiene:
+
+- Nombre
+- Categoría
+- Precio
+- Precio de lista
+- Imagen
+- URL del producto
+
+Al finalizar la extracción genera un JSON y lo envía automáticamente a la API mediante una petición HTTP POST.
+
+---
+
+## API REST
+
+La API desacopla el scraper de la base de datos.
+
+### POST
+
+```http
+POST /api/items
+```
+
+Recibe un arreglo JSON de productos, valida la información y realiza la inserción masiva en Supabase.
+
+---
+
+### GET
+
+```http
+GET /api/items
+```
+
+Obtiene todos los productos almacenados, los retorna ordenados cronológicamente, dando respuestas como lo son:
+
+```json
+{
+    "success": true,
+    "items": [
+        {
+            "nombre": "...",
+            "categoria": "...",
+            "precio": "...",
+            "precio_lista": "...",
+            "url": "...",
+            "imagen": "...",
+            "created_at": "..."
+        }
+    ]
+}
+```
+
+---
+
+# Base de datos
+
+La persistencia se realiza mediante **Supabase PostgreSQL**.
+
+Tabla utilizada:
+
+```
+scraped_items
+```
+
+Campos principales:
+
+- id
+- nombre
+- categoria
+- precio
+- precio_lista
+- url
+- imagen
+- created_at
+
+La tabla cuenta con:
+
+- Clave primaria automática.
+- Timestamp automático.
+- Políticas RLS habilitadas para lectura y escritura.
+
+---
+
+# Frontend
+
+El frontend consume la información mediante:
+
+```http
+GET /api/items
+```
+
+Su características son:
+
+- Consulta asincrónica mediante Fetch API.
+- Visualización mediante tarjetas dinámicas.
+- Botón de actualización manual.
+- Estadísticas de productos.
+- Conteo por categoría.
+- Filtro por categoría.
+
+---
+
+# Vista previa
+
+![Frontend](docs/frontend.png)
+
 # Instalación
+
+---
 
 ## 1. Clonar el repositorio
 
 ```bash
 git clone <URL_DEL_REPOSITORIO>
 
-cd Proyecto
+cd NOMBRE_DE_TU_CARPETA_GUARDADA
 ```
 
 ---
 
-## 2. Instalar dependencias de Python
-
-```bash
-pip install -r requirements.txt
-```
-
----
-
-## 3. Instalar dependencias de Node
+## 2. Instalar dependencias del Backend
 
 ```bash
 cd api
@@ -150,9 +244,23 @@ npm install
 
 ---
 
-# Configuración
+## 3. Instalar dependencias de Python
 
-Crear un archivo `.env` dentro de la carpeta `api` con el siguiente contenido:
+```bash
+pip install -r requirements.txt
+```
+
+---
+
+## 4. Configurar variables de entorno
+
+Crear un archivo:
+
+```
+api/.env
+```
+
+Contenido:
 
 ```env
 SUPABASE_URL=TU_SUPABASE_URL
@@ -164,7 +272,7 @@ SUPABASE_KEY=TU_SUPABASE_ANON_KEY
 
 # Ejecución
 
-## 1. Iniciar la API
+## Iniciar la API
 
 ```bash
 cd api
@@ -172,17 +280,9 @@ cd api
 npm run dev
 ```
 
-La API iniciará por defecto en:
-
-```
-http://localhost:3000
-```
-
 ---
 
-## 2. Ejecutar el scraper
-
-En otra terminal:
+## Ejecutar el Web Scraper
 
 ```bash
 cd scripts
@@ -190,109 +290,56 @@ cd scripts
 python scraper.py
 ```
 
-El scraper:
-
-- realiza las búsquedas,
-- construye el JSON,
-- envía automáticamente los datos a la API mediante HTTP POST,
-- la API valida e inserta los registros en Supabase.
+El scraper enviará automáticamente la información a la API.
 
 ---
 
-# Endpoints disponibles
+## Abrir el Frontend
 
-## GET
-
-Obtiene todos los productos almacenados.
+Abrir el archivo:
 
 ```
-GET /api/items
+frontend/index.html
 ```
 
-Respuesta:
-
-```json
-{
-    "success": true,
-    "cantidad": 100,
-    "items": [
-        ...
-    ]
-}
-```
-
----
-
-## POST
-
-Inserta múltiples productos en la base de datos.
-
-```
-POST /api/items
-```
-
-Body:
-
-```json
-[
-    {
-        "categoria": "arroz",
-        "nombre": "...",
-        "precio": "...",
-        "precio_lista": "...",
-        "url": "...",
-        "imagen": "..."
-    }
-]
-```
-
----
-
-# Base de datos
-
-La información se almacena en una tabla denominada:
-
-```
-scraped_items
-```
-
-Cada registro contiene:
-
-- id
-- categoria
-- nombre
-- precio
-- precio_lista
-- url
-- imagen
-- created_at
+mediante un servidor local, en este caso y durante el desarrollo se hizo con Live Server en Visual Studio Code.
 
 ---
 
 # Flujo del sistema
 
-```
-Exito.com
-     │
-     ▼
-Scraper Python
-     │
-     ▼
-JSON
-     │
-HTTP POST
-     │
-     ▼
-API REST
-     │
-     ▼
-Supabase PostgreSQL
-     │
-     ▼
+```text
+1. Python ejecuta el scraper
+
+↓
+
+2. Se obtienen los productos desde Éxito.com
+
+↓
+
+3. Se genera un JSON
+
+↓
+
+4. POST /api/items
+
+↓
+
+5. Supabase almacena los registros
+
+↓
+
+6. El Frontend realiza:
+
 GET /api/items
+
+↓
+
+7. Se renderizan las tarjetas dinámicamente
 ```
 
 ---
 
-# Autores
-- Juan José Campos Covaleda
+# Autor
+
+**Juan José Campos Covaleda** - Universidad de La Sabana
