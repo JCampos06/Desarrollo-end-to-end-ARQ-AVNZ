@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Productos Éxito</title>
+
+    <link rel="stylesheet" href="css/styles.css">
+
+</head>
+
+<body>
+
+    <header>
+
+        <h1>Productos Éxito</h1>
+
+        <p>Consulta los productos almacenados.</p>
+
+    </header>
+
+    <main>
+
+        <section class="panel">
+
+            <div class="estadisticas">
+
+                <div class="estadistica">
+                    <span class="titulo">Total</span>
+                    <span class="numero" id="total">0</span>
+                </div>
+
+                <div class="estadistica">
+                    <span class="titulo">Arroz</span>
+                    <span class="numero" id="arroz">0</span>
+                </div>
+
+                <div class="estadistica">
+                    <span class="titulo">Papas</span>
+                    <span class="numero" id="papas">0</span>
+                </div>
+
+                <div class="estadistica">
+                    <span class="titulo">Agua</span>
+                    <span class="numero" id="agua">0</span>
+                </div>
+
+                <div class="estadistica">
+                    <span class="titulo">Galletas</span>
+                    <span class="numero" id="galletas">0</span>
+                </div>
+
+                <div class="estadistica">
+                    <span class="titulo">Gaseosa</span>
+                    <span class="numero" id="gaseosa">0</span>
+                </div>
+
+            </div>
+
+            <button id="actualizar">
+                Actualizar
+            </button>
+
+        </section>
+
+        <section class="filtros">
+
+            <button class="filtro activo" data-categoria="todos">Todos</button>
+
+            <button class="filtro" data-categoria="arroz">Arroz</button>
+
+            <button class="filtro" data-categoria="papas">Papas</button>
+
+            <button class="filtro" data-categoria="agua">Agua</button>
+
+            <button class="filtro" data-categoria="galletas">Galletas</button>
+
+            <button class="filtro" data-categoria="gaseosa">Gaseosa</button>
+
+        </section>
+
+        <section id="productos" class="contenedor-productos">
+
+        </section>
+
+    </main>
+
+    <footer>
+
+        <p>Taller Arquitectura y Patrones Avanzado</p>
+
+        <p>Juan Campos</p>
+
+    </footer>
+
+    <script src="js/app.js"></script>
+
+</body>
+</html>
