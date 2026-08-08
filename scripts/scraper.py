@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import logging
+import os
 import re
 import time
 from dataclasses import dataclass
@@ -11,6 +12,7 @@ import requests
 from selenium import webdriver
 from selenium.common.exceptions import NoSuchElementException, TimeoutException
 from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
@@ -25,7 +27,7 @@ logging.basicConfig(
 logger = logging.getLogger("exito-scraper")
 
 BASE_URL = "https://www.exito.com"
-API_URL = "http://localhost:3000/api/items"
+API_URL = os.environ.get("API_URL", "http://localhost:3000/api/items")
 DEFAULT_TIMEOUT = 25
 USER_AGENT = (
     "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
@@ -80,7 +82,14 @@ class ExitoScraper:
         options.add_experimental_option("excludeSwitches", ["enable-automation"])
         options.add_experimental_option("useAutomationExtension", False)
 
-        driver = webdriver.Chrome(options=options)
+        chrome_bin = os.environ.get("CHROME_BIN")
+        if chrome_bin:
+            options.binary_location = chrome_bin
+
+        chromedriver_path = os.environ.get("CHROMEDRIVER_PATH")
+        service = Service(executable_path=chromedriver_path) if chromedriver_path else None
+
+        driver = webdriver.Chrome(options=options, service=service)
         driver.execute_cdp_cmd(
             "Page.addScriptToEvaluateOnNewDocument",
             {

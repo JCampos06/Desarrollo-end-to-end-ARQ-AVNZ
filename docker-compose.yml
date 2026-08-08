@@ -1,0 +1,57 @@
+services:
+  api:
+    build:
+      context: ./api
+      dockerfile: Dockerfile
+    image: taller1-api:local
+    env_file:
+      - api/.env
+    environment:
+      PORT: 3000
+    ports:
+      - "3000:3000"
+    networks:
+      - app-net
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:3000/health').then(r=>{if(!r.ok)process.exit(1)}).catch(()=>process.exit(1))"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    image: taller1-frontend:local
+    ports:
+      - "8080:80"
+    networks:
+      - app-net
+    depends_on:
+      api:
+        condition: service_healthy
+    restart: unless-stopped
+
+  scraper:
+    build:
+      context: .
+      dockerfile: scripts/Dockerfile
+    image: taller1-scraper:local
+    environment:
+      API_URL: http://api:3000/api/items
+    networks:
+      - app-net
+    depends_on:
+      api:
+        condition: service_healthy
+    profiles:
+      - scraper
+    # One-shot batch job: run on demand with
+    #   docker compose run --rm scraper
+    # Not started by a plain `docker compose up` (see the "scraper" profile).
+
+networks:
+  app-net:
+    driver: bridge
